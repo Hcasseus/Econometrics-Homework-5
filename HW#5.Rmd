@@ -1,0 +1,280 @@
+---
+title: "Homework 5"
+author: "Hertzbert Casseus"
+date: "11/2/2020"
+group: Neshma and Fareha
+---
+
+
+
+
+load("acs2017_ny_data.RData")
+attach(acs2017_ny)
+use_varb <- (AGE >= 25) & (AGE <= 55) & (LABFORCE == 2) & (WKSWORK2 > 4) & (UHRSWORK >= 35) & (Hispanic == 1) & (female == 1) & ((educ_college == 1) | (educ_advdeg == 1))
+dat_use <- subset(acs2017_ny,use_varb) # 
+
+#Initially, I entered a series of polynomials to regress in order to analyze their statistical significance. In this case, this gives us insight as to whether there is a relationship between wage as a function of age
+
+lm((INCWAGE ~ AGE + I(AGE^2) + I(AGE^3) + I(AGE^4)))
+model_1 <- lm((INCWAGE ~ AGE + I(AGE^2) + I(AGE^3) + I(AGE^4)))
+
+Call:
+  lm(formula = (INCWAGE ~ AGE + I(AGE^2) + I(AGE^3) + I(AGE^4)))
+
+Coefficients:
+  (Intercept)          AGE     I(AGE^2)     I(AGE^3)     I(AGE^4)  
+-6.919e+04    3.405e+03    7.387e+01   -2.717e+00    1.744e-02 
+
+summary(model_1)
+
+Call:
+  lm(formula = (INCWAGE ~ AGE + I(AGE^2) + I(AGE^3) + I(AGE^4)))
+
+Residuals:
+  Min     1Q Median     3Q    Max 
+-57574 -29107  -9101   5946 641975 
+
+Coefficients:
+  Estimate Std. Error t value Pr(>|t|)    
+(Intercept) -6.919e+04  4.829e+03 -14.326  < 2e-16 ***
+  AGE          3.405e+03  4.560e+02   7.468 8.19e-14 ***
+  I(AGE^2)     7.387e+01  1.468e+01   5.031 4.88e-07 ***
+  I(AGE^3)    -2.717e+00  1.944e-01 -13.974  < 2e-16 ***
+  I(AGE^4)     1.744e-02  9.053e-04  19.268  < 2e-16 ***
+  ---
+  Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 63130 on 163153 degrees of freedom
+(33427 observations deleted due to missingness)
+Multiple R-squared:  0.08967,	Adjusted R-squared:  0.08965 
+F-statistic:  4018 on 4 and 163153 DF,  p-value: < 2.2e-16
+
+#Our summary above dictates that there is statistical significance amongst our polnomial variables and our coefficient of determination received from stargazer below (R^2) shows a fairly strong positive correlation amongst our variables as well.
+
+require(stargazer)
+stargazer(model_1, type = "text")
+
+===============================================================
+  Dependent variable:            
+  -------------------------------------------
+  INCWAGE ~ AGE + I(AGE2) + I(AGE3) + I(AGE4)
+---------------------------------------------------------------
+  AGE                                3,405.220***                
+  (455.980)                 
+
+I(AGE2)                              73.869***                 
+  (14.683)                  
+
+I(AGE3)                              -2.717***                 
+  (0.194)                  
+
+I(AGE4)                              0.017***                  
+  (0.001)                  
+
+Constant                          -69,185.220***               
+  (4,829.194)                
+
+---------------------------------------------------------------
+  Observations                          163,158                  
+R2                                     0.090                   
+Adjusted R2                            0.090                   
+Residual Std. Error          63,134.270 (df = 163153)          
+F Statistic                4,017.661*** (df = 4; 163153)       
+===============================================================
+  Note:                               *p<0.1; **p<0.05; ***p<0.01
+
+use_varb2 <- (AGE >= 25) & (AGE <= 55) & (LABFORCE == 2) & (WKSWORK2 > 4) & (UHRSWORK >= 35) & (Hispanic == 1) & (female == 1) & ( (educ_hs == 1) | (educ_college == 1) | (educ_advdeg == 1))
+dat_use2 <- subset(acs2017_ny,use_varb2) #
+lm((INCWAGE ~ AGE + I(AGE^2) + I(AGE^3) + I(AGE^4) + educ_hs + educ_college + educ_advdeg))
+
+Call:
+  lm(formula = (INCWAGE ~ AGE + I(AGE^2) + I(AGE^3) + I(AGE^4) + 
+                  educ_hs + educ_college + educ_advdeg))
+
+Coefficients:
+  (Intercept)           AGE      I(AGE^2)      I(AGE^3)      I(AGE^4)       educ_hs  educ_college   educ_advdeg  
+2.138e+04    -5.137e+03     3.140e+02    -5.526e+00     2.923e-02    -1.827e+03     2.820e+04     4.985e+04
+
+model_2 <- lm((INCWAGE ~ AGE + I(AGE^2) + I(AGE^3) + I(AGE^4) + educ_hs + educ_college + educ_advdeg))
+
+summary(model_2)
+
+Call:
+  lm(formula = (INCWAGE ~ AGE + I(AGE^2) + I(AGE^3) + I(AGE^4) + 
+                  educ_hs + educ_college + educ_advdeg))
+
+Residuals:
+  Min     1Q Median     3Q    Max 
+-92408 -26928  -4724  11528 650887 
+
+Coefficients:
+  Estimate Std. Error t value Pr(>|t|)    
+(Intercept)   2.138e+04  4.686e+03   4.563 5.05e-06 ***
+  AGE          -5.137e+03  4.434e+02 -11.584  < 2e-16 ***
+  I(AGE^2)      3.140e+02  1.422e+01  22.079  < 2e-16 ***
+  I(AGE^3)     -5.526e+00  1.878e-01 -29.422  < 2e-16 ***
+  I(AGE^4)      2.923e-02  8.726e-04  33.496  < 2e-16 ***
+  educ_hs      -1.827e+03  3.696e+02  -4.942 7.74e-07 ***
+  educ_college  2.820e+04  4.415e+02  63.872  < 2e-16 ***
+  educ_advdeg   4.985e+04  4.843e+02 102.939  < 2e-16 ***
+  ---
+  Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 60310 on 163150 degrees of freedom
+(33427 observations deleted due to missingness)
+Multiple R-squared:  0.1692,	Adjusted R-squared:  0.1691 
+F-statistic:  4746 on 7 and 163150 DF,  p-value: < 2.2e-16
+
+#Introducing education to the regression, we see that each education variable is statistically significant, and nothing has changed about the significance of our polynomials. However, according to our coefficient of determination below, there is a weak relationship between this modified regression incorporating new education variables.
+
+stargazer(model_2, type = "text")
+
+======================================================================================================
+  Dependent variable:                                
+  ----------------------------------------------------------------------------------
+  INCWAGE ~ AGE + I(AGE2) + I(AGE3) + I(AGE4) + educ_hs + educ_college + educ_advdeg
+------------------------------------------------------------------------------------------------------
+  AGE                                                   -5,136.743***                                   
+  (443.429)                                     
+
+I(AGE2)                                                 314.016***                                    
+  (14.222)                                     
+
+I(AGE3)                                                 -5.526***                                     
+  (0.188)                                      
+
+I(AGE4)                                                  0.029***                                     
+  (0.001)                                      
+
+educ_hs                                               -1,826.634***                                   
+  (369.623)                                     
+
+educ_college                                          28,201.600***                                   
+  (441.536)                                     
+
+educ_advdeg                                           49,853.440***                                   
+  (484.302)                                     
+
+Constant                                              21,383.330***                                   
+  (4,686.320)                                    
+
+------------------------------------------------------------------------------------------------------
+  Observations                                             163,158                                      
+R2                                                        0.169                                       
+Adjusted R2                                               0.169                                       
+Residual Std. Error                              60,314.500 (df = 163150)                             
+F Statistic                                   4,746.170*** (df = 7; 163150)                           
+======================================================================================================
+  Note:                                                                      *p<0.1; **p<0.05; ***p<0.01
+
+
+
+NNobs <- length(INCWAGE) 
+set.seed(12345) 
+graph_obs <- (runif(NNobs) < 0.1) 
+dat_graph <-subset(dat_use,graph_obs)
+
+plot(INCWAGE ~ jitter(AGE, factor = 2), pch = 16, col = rgb(0.5, 0.5, 0.5, alpha = 0.2), ylim = c(0,150000), data = dat_graph)
+to_be_predicted0 <- data.frame(AGE = 20:65, female = 1, educ_college = 1, educ_advdeg = 1)
+to_be_predicted0$yhat <- predict(model_1, newdata = to_be_predicted0)
+lines(yhat ~ AGE, data = to_be_predicted0)  
+
+#In plotting our first regression, we can see that the relationship amongst our variables is non-linear. Thus we can conclude that the relationship is not as strong for wage as a function of age. Furthermore, we can see that the concave regression line begins to slope downward around the age of 45. My conclusion on this is that wages begin to plateau at a certain point in individuals careers and with potential shifts in careers, inability to work to the same productivity levels, etc. wages may begin to slightly trend downward.
+
+NNobs <- length(INCWAGE) 
+set.seed(12345) 
+graph_obs <- (runif(NNobs) < 0.1) 
+dat_graph2 <-subset(dat_use2,graph_obs)
+
+plot(INCWAGE ~ jitter(AGE, factor = 2), pch = 16, col = rgb(0.5, 0.5, 0.5, alpha = 0.2), ylim = c(0,150000), data = dat_graph)
+to_be_predicted1 <- data.frame(AGE = 20:65, female = 1, educ_hs = 1, educ_college = 1, educ_advdeg = 1)
+to_be_predicted1$yhat <- predict(model_2, newdata = to_be_predicted1)
+lines(yhat ~ AGE, data = to_be_predicted1)  
+
+#In plotting our second regression, including education, we see a similar trend as our fiest regresseion. Non-linear relationship, with a downward trend later in life. Although, we can note that as far as wage, the Y-intercept is greater, thus leading me to believe that education gives individuals a higher wage earlies in their working careers
+
+lm(INCWAGE~log(AGE)+I(log(AGE^2))+I(log(AGE^3))+I(log(AGE^4))+female)
+
+
+Call:
+  lm(formula = INCWAGE ~ log(AGE) + I(log(AGE^2)) + I(log(AGE^3)) + 
+       I(log(AGE^4)) + female)
+
+Coefficients:
+  (Intercept)       log(AGE)  I(log(AGE^2))  I(log(AGE^3))  I(log(AGE^4))         female  
+32828           2445             NA             NA             NA         -15908
+
+model_3 <- lm(INCWAGE~log(AGE)+I(log(AGE^2))+I(log(AGE^3))+I(log(AGE^4))+female)
+summary(model_3)
+
+Call:
+  lm(formula = INCWAGE ~ log(AGE) + I(log(AGE^2)) + I(log(AGE^3)) + 
+       I(log(AGE^4)) + female)
+
+Residuals:
+  Min     1Q Median     3Q    Max 
+-43963 -27812 -22012  13151 613209 
+
+Coefficients: (3 not defined because of singularities)
+Estimate Std. Error t value Pr(>|t|)    
+(Intercept)    32827.8     1378.9  23.808  < 2e-16 ***
+  log(AGE)        2445.3      360.6   6.781 1.19e-11 ***
+  I(log(AGE^2))       NA         NA      NA       NA    
+I(log(AGE^3))       NA         NA      NA       NA    
+I(log(AGE^4))       NA         NA      NA       NA    
+female        -15908.2      325.9 -48.820  < 2e-16 ***
+  ---
+  Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 65690 on 163155 degrees of freedom
+(33427 observations deleted due to missingness)
+Multiple R-squared:  0.01453,	Adjusted R-squared:  0.01452 
+F-statistic:  1203 on 2 and 163155 DF,  p-value: < 2.2e-16
+
+#Lastly, I wanted to attempt a regression using log to see if I could assess the significance of the percent changes amongst the data.This was to no avail. I believe my error lies in the fact that I cannot analyze a percent change if the function is not correlated. Wage as a function of age is not colinear, thus the lack of relationship there yields log useless. 
+
+stargazer(model_3, type = "text")
+
+=================================================
+  Dependent variable:     
+  -----------------------------
+  INCWAGE           
+-------------------------------------------------
+  log(AGE)                    2,445.307***         
+  (360.587)          
+
+I(log(AGE2))                                     
+
+
+I(log(AGE3))                                     
+
+
+I(log(AGE4))                                     
+
+
+female                     -15,908.250***        
+  (325.854)          
+
+Constant                    32,827.840***        
+  (1,378.852)         
+
+-------------------------------------------------
+  Observations                   163,158           
+R2                              0.015            
+Adjusted R2                     0.015            
+Residual Std. Error   65,687.820 (df = 163155)
+F Statistic         1,202.590*** (df = 2; 163155)
+=================================================
+  Note:                 *p<0.1; **p<0.05; ***p<0.01
+
+NNobs <- length(INCWAGE) 
+set.seed(12345) 
+graph_obs <- (runif(NNobs) < 0.1) 
+dat_graph3 <-subset(dat_use2,graph_obs)
+
+plot(INCWAGE ~ jitter(AGE, factor = 2), pch = 16, col = rgb(0.5, 0.5, 0.5, alpha = 0.2), ylim = c(0,150000), data = dat_graph)
+to_be_predicted2 <- data.frame(AGE = 20:65, female = 1, educ_hs = 1, educ_college = 1, educ_advdeg = 1)
+to_be_predicted2$yhat <- predict(model_3, newdata = to_be_predicted2)
+lines(yhat ~ AGE, data = to_be_predicted2)
+
+#No relationship was the product of our attempt to regress the introduction of log, as I could not find the percentage change of a function that is not correlated
